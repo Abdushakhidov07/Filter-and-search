@@ -1,30 +1,34 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.db.models import Q
 
+
 # Create your views here.
 
-def add_customer(request):
+def create_order(request, pk):
+    product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
         data = request.POST
-        Customer.objects.create(
-            fullname = data['fullname'],
-            age = data['age'],
-            phone = data['phone'],
-            email = data['email']
+        order = Order.objects.create(
+            customer_name = data['customer_name'],
+            count = data['count'],
         )
-        return redirect('show_customers')
-    return render(request, 'add_customer.html')
+        product = product
+        product.stock -= int(data['count'])
+        product.save()
+        order.product_id.add(product)
+        return redirect('get_products')
+    
+    return render(request, 'add_orders.html', {"product": product})
     
     
-def get_customer(request):
+def get_products(request):
     
     query = request.GET.get('q')
-    customers=Customer.objects.all()
+    products=Product.objects.all()
     if query:
-        customers=customers.filter(
-            fullname__icontains = query
+        products=products.filter(
+            product_name__icontains = query
         )
-
-    return render(request, 'show_customer.html', {"customers":customers, 'query':query})
+    return render(request, 'show_products.html', {"products":products, 'query':query})
         

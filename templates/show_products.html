@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="GET">
+        {% csrf_token %}
+        <input type="text", name="q" placeholder="Search product..." value = {{query}}>
+        <button type="submit">Search</button>
+    </form>
+
+    {% for product in products %}
+    <div>
+    <img src="{{ product.photo.url }}" width="200">
+     <h1>{{product.product_name}}</h1>   
+     <p>{{product.category_id.category_name}}</p>
+     <p>{{product.price}}</p>
+     <p>{{product.stock}}</p>
+     <button><a href=" http://127.0.0.1:8000/create_order/{{product.id}}">Order</a></button>
+    </div>
+    {% endfor %}
+</body>
+</html>
